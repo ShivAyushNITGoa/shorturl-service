@@ -35,32 +35,49 @@ export default function Login() {
         const userEmail = data.user.email || '';
         const userId = data.user.id || '';
         const userName = data.user.user_metadata?.full_name || (userEmail ? userEmail.split('@')[0] : 'User');
+        const authToken = data.session?.access_token || '';
         
-        // Send auth token to extension if available
+        // Store in localStorage for extension to pick up
+        localStorage.setItem('extensionAuthToken', authToken);
+        localStorage.setItem('extensionUserEmail', userEmail);
+        localStorage.setItem('extensionUserId', userId);
+        localStorage.setItem('extensionUserName', userName);
+        
+        console.log('[Login] Auth stored in localStorage');
+        
+        // Try to send auth token to extension via chrome.runtime.sendMessage
         const chromeRuntime = (window as any).chrome?.runtime;
         if (chromeRuntime) {
           try {
+            // Send to extension background script
             chromeRuntime.sendMessage(
               {
                 type: 'AUTH_SUCCESS',
-                authToken: data.session?.access_token || '',
+                authToken: authToken,
                 userEmail: userEmail,
                 userId: userId,
                 userName: userName
               },
               (response: any) => {
-                console.log('[Login] Auth sent to extension:', response);
+                console.log('[Login] Auth message sent to extension:', response);
               }
             );
           } catch (err) {
-            console.log('[Login] Extension not available, continuing anyway');
+            console.log('[Login] Could not send to extension, using localStorage fallback');
           }
         }
         
-        // Store in localStorage for extension to pick up
-        localStorage.setItem('extensionAuthToken', data.session?.access_token || '');
-        localStorage.setItem('extensionUserEmail', userEmail);
-        localStorage.setItem('extensionUserId', userId);
+        // Also broadcast to all windows/tabs
+        if (typeof window !== 'undefined') {
+          window.postMessage({
+            type: 'AUTH_SUCCESS',
+            authToken: authToken,
+            userEmail: userEmail,
+            userId: userId,
+            userName: userName
+          }, '*');
+          console.log('[Login] Auth broadcasted via postMessage');
+        }
         
         console.log('[Login] Redirecting to dashboard');
         window.location.href = '/dashboard';
