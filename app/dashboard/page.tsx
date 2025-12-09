@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { LogOut, Plus, Trash2, Copy, ExternalLink } from 'lucide-react';
+import { LogOut, Plus, Trash2, Copy, ExternalLink, BarChart3, Settings, Home, FileText, User } from 'lucide-react';
 
 interface ShortURL {
   id: number;
@@ -109,35 +109,112 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-white">The GDevelopers</h1>
-            <p className="text-slate-400 text-sm">Short URL Manager</p>
+      <header className="border-b border-slate-700 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 backdrop-blur sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4 mb-4">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                The GDevelopers
+              </h1>
+              <p className="text-slate-400 text-sm mt-1">Short URL Manager & Analytics</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-slate-300 text-sm">
+                {user?.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
           </div>
-          <nav className="flex items-center gap-6">
-            <Link href="/analytics" className="text-slate-300 hover:text-white transition">
-              📊 Analytics
-            </Link>
-            <Link href="/profile" className="text-slate-300 hover:text-white transition">
-              👤 Profile
-            </Link>
-            <Link href="/docs" className="text-slate-300 hover:text-white transition">
-              📚 Docs
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+
+          {/* Navigation Tabs */}
+          <nav className="flex items-center gap-1 border-t border-slate-700 pt-0">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 px-4 py-3 text-white bg-blue-600 border-b-2 border-blue-500 transition font-medium"
             >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
+              <Home className="w-4 h-4" />
+              Dashboard
+            </Link>
+            <Link
+              href="/analytics"
+              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
+            >
+              <BarChart3 className="w-4 h-4" />
+              Analytics
+            </Link>
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
+            >
+              <User className="w-4 h-4" />
+              Profile
+            </Link>
+            <Link
+              href="/docs"
+              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
+            >
+              <FileText className="w-4 h-4" />
+              Docs
+            </Link>
+            <Link
+              href="/about"
+              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
+            >
+              <Settings className="w-4 h-4" />
+              About
+            </Link>
           </nav>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-700/50 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-300 text-sm font-medium">Total URLs</p>
+                <p className="text-3xl font-bold text-white mt-2">{shortUrls.length}</p>
+              </div>
+              <Plus className="w-12 h-12 text-blue-500/30" />
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-cyan-900/30 to-cyan-800/20 border border-cyan-700/50 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-cyan-300 text-sm font-medium">Total Clicks</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {shortUrls.reduce((sum, url) => sum + url.clicks, 0)}
+                </p>
+              </div>
+              <BarChart3 className="w-12 h-12 text-cyan-500/30" />
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-700/50 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-300 text-sm font-medium">Avg Clicks</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {shortUrls.length > 0 
+                    ? Math.round(shortUrls.reduce((sum, url) => sum + url.clicks, 0) / shortUrls.length)
+                    : 0
+                  }
+                </p>
+              </div>
+              <ExternalLink className="w-12 h-12 text-purple-500/30" />
+            </div>
+          </div>
+        </div>
+
         {/* Create New URL Section */}
         <div className="bg-slate-800 rounded-lg border border-slate-700 p-6 mb-8">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -164,9 +241,12 @@ export default function Dashboard() {
         </div>
 
         {/* URLs List */}
-        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-700">
-            <h2 className="text-xl font-bold text-white">Your Short URLs ({shortUrls.length})</h2>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden shadow-lg">
+          <div className="px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-slate-800 to-slate-700">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-400" />
+              Your Short URLs ({shortUrls.length})
+            </h2>
           </div>
 
           {shortUrls.length === 0 ? (
@@ -187,9 +267,11 @@ export default function Dashboard() {
                 </thead>
                 <tbody className="divide-y divide-slate-700">
                   {shortUrls.map((url) => (
-                    <tr key={url.id} className="hover:bg-slate-700/30 transition">
+                    <tr key={url.id} className="hover:bg-slate-700/50 transition duration-200 group">
                       <td className="px-6 py-4">
-                        <code className="text-blue-400 font-mono text-sm">{url.short_code}</code>
+                        <code className="text-blue-400 font-mono text-sm bg-slate-900/50 px-3 py-1 rounded group-hover:bg-slate-900 transition">
+                          {url.short_code}
+                        </code>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-slate-300 text-sm truncate max-w-xs" title={url.long_url}>
@@ -197,16 +279,22 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-slate-300 font-semibold">{url.clicks}</span>
+                        <span className="text-slate-300 font-semibold bg-cyan-900/30 px-3 py-1 rounded-full text-sm">
+                          {url.clicks} clicks
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-slate-400 text-sm">
-                        {new Date(url.created_at).toLocaleDateString()}
+                        {new Date(url.created_at).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => copyToClipboard(`https://extensions.thegdevelopers.online/shorturl/${url.short_code}`)}
-                            className="p-2 hover:bg-slate-700 rounded transition text-slate-300 hover:text-blue-400"
+                            className="p-2 bg-blue-900/30 hover:bg-blue-900/60 rounded transition text-blue-300 hover:text-blue-200 font-medium"
                             title="Copy short URL"
                           >
                             <Copy className="w-4 h-4" />
@@ -215,14 +303,14 @@ export default function Dashboard() {
                             href={`https://extensions.thegdevelopers.online/shorturl/${url.short_code}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 hover:bg-slate-700 rounded transition text-slate-300 hover:text-green-400"
+                            className="p-2 bg-green-900/30 hover:bg-green-900/60 rounded transition text-green-300 hover:text-green-200 font-medium"
                             title="Visit short URL"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
                           <button
                             onClick={() => deleteUrl(url.id)}
-                            className="p-2 hover:bg-red-900/30 rounded transition text-slate-300 hover:text-red-400"
+                            className="p-2 bg-red-900/30 hover:bg-red-900/60 rounded transition text-red-300 hover:text-red-200 font-medium"
                             title="Delete URL"
                           >
                             <Trash2 className="w-4 h-4" />

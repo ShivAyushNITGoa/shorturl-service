@@ -3,16 +3,43 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Validate credentials
+const validateCredentials = () => {
+  const errors: string[] = [];
+
+  if (!supabaseUrl) {
+    errors.push('NEXT_PUBLIC_SUPABASE_URL is missing');
+  } else if (!supabaseUrl.includes('supabase.co')) {
+    errors.push('NEXT_PUBLIC_SUPABASE_URL is invalid (should end with .supabase.co)');
+  }
+
+  if (!supabaseAnonKey) {
+    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is missing');
+  } else if (supabaseAnonKey.includes('REPLACE_WITH')) {
+    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is not configured (still has placeholder)');
+  } else if (!supabaseAnonKey.startsWith('eyJ')) {
+    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is invalid (should start with eyJ)');
+  } else if (supabaseAnonKey.length < 100) {
+    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is too short (incomplete key)');
+  }
+
+  return errors;
+};
+
+const validationErrors = validateCredentials();
+
 // Log for debugging
 if (typeof window !== 'undefined') {
+  console.log('[Supabase] Configuration Check:');
   console.log('[Supabase] URL:', supabaseUrl ? '✓ Set' : '✗ Missing');
   console.log('[Supabase] Key:', supabaseAnonKey ? '✓ Set' : '✗ Missing');
+  if (validationErrors.length > 0) {
+    console.error('[Supabase] Validation Errors:', validationErrors);
+  }
 }
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  const errorMsg = `Missing Supabase environment variables:
-    - NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? 'Set' : 'Missing'}
-    - NEXT_PUBLIC_SUPABASE_ANON_KEY: ${supabaseAnonKey ? 'Set' : 'Missing'}`;
+if (validationErrors.length > 0) {
+  const errorMsg = `Invalid Supabase Configuration:\n${validationErrors.join('\n')}\n\nPlease set correct environment variables in .env.local`;
   
   if (typeof window !== 'undefined') {
     console.error('[Supabase] ' + errorMsg);
@@ -21,7 +48,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(errorMsg);
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
 
 // Database types
 export interface UserProfile {
