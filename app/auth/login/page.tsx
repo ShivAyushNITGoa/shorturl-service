@@ -17,15 +17,36 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('[Login] Attempting login with:', email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
-      window.location.href = '/dashboard';
+      if (error) {
+        console.error('[Login] Auth error:', error);
+        throw error;
+      }
+
+      if (data?.user) {
+        console.log('[Login] Success, redirecting to dashboard');
+        window.location.href = '/dashboard';
+      }
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      console.error('[Login] Error:', err);
+      const errorMessage = err.message || 'Login failed';
+      
+      // Provide helpful error messages
+      if (errorMessage.includes('Invalid login credentials')) {
+        setError('Invalid email or password');
+      } else if (errorMessage.includes('Invalid API key')) {
+        setError('Configuration error: Invalid Supabase API key. Please contact support.');
+      } else if (errorMessage.includes('Network')) {
+        setError('Network error. Please check your connection.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

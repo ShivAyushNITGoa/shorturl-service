@@ -20,7 +20,9 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const { error: signupError } = await supabase.auth.signUp({
+      console.log('[Signup] Attempting signup with:', email);
+      
+      const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -30,13 +32,32 @@ export default function Signup() {
         },
       });
 
-      if (signupError) throw signupError;
+      if (signupError) {
+        console.error('[Signup] Auth error:', signupError);
+        throw signupError;
+      }
+
+      console.log('[Signup] Success, redirecting to login');
       setSuccess('Account created! Check your email to confirm.');
       setTimeout(() => {
         window.location.href = '/auth/login';
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Signup failed');
+      console.error('[Signup] Error:', err);
+      const errorMessage = err.message || 'Signup failed';
+      
+      // Provide helpful error messages
+      if (errorMessage.includes('already registered')) {
+        setError('Email already registered. Please login instead.');
+      } else if (errorMessage.includes('Invalid API key')) {
+        setError('Configuration error: Invalid Supabase API key. Please contact support.');
+      } else if (errorMessage.includes('Network')) {
+        setError('Network error. Please check your connection.');
+      } else if (errorMessage.includes('password')) {
+        setError('Password must be at least 6 characters.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
