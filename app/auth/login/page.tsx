@@ -32,6 +32,10 @@ export default function Login() {
       if (data?.user) {
         console.log('[Login] Success, sending auth to extension');
         
+        const userEmail = data.user.email || '';
+        const userId = data.user.id || '';
+        const userName = data.user.user_metadata?.full_name || (userEmail ? userEmail.split('@')[0] : 'User');
+        
         // Send auth token to extension if available
         const chromeRuntime = (window as any).chrome?.runtime;
         if (chromeRuntime) {
@@ -40,9 +44,9 @@ export default function Login() {
               {
                 type: 'AUTH_SUCCESS',
                 authToken: data.session?.access_token || '',
-                userEmail: data.user.email,
-                userId: data.user.id,
-                userName: data.user.user_metadata?.full_name || data.user.email.split('@')[0]
+                userEmail: userEmail,
+                userId: userId,
+                userName: userName
               },
               (response: any) => {
                 console.log('[Login] Auth sent to extension:', response);
@@ -55,8 +59,8 @@ export default function Login() {
         
         // Store in localStorage for extension to pick up
         localStorage.setItem('extensionAuthToken', data.session?.access_token || '');
-        localStorage.setItem('extensionUserEmail', data.user.email);
-        localStorage.setItem('extensionUserId', data.user.id);
+        localStorage.setItem('extensionUserEmail', userEmail);
+        localStorage.setItem('extensionUserId', userId);
         
         console.log('[Login] Redirecting to dashboard');
         window.location.href = '/dashboard';
