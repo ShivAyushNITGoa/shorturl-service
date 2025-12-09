@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { BarChart3, TrendingUp, Link2, MousePointerClick } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 interface AnalyticsData {
   totalUrls: number;
@@ -151,6 +152,7 @@ export default function Analytics() {
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

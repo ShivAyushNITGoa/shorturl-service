@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { BookOpen, Code2, Zap, Shield, HelpCircle } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 export default function Documentation() {
   return (
@@ -192,6 +193,7 @@ export default function Documentation() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User, Mail, Save, Shield } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);
@@ -147,6 +148,7 @@ export default function Profile() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

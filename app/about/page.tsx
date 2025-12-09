@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Github, Globe, Mail, Zap, Users, Target } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 export default function About() {
   return (
@@ -138,6 +139,7 @@ export default function About() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

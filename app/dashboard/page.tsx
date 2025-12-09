@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { Plus, Trash2, Copy, ExternalLink, BarChart3 } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 interface ShortURL {
   id: number;
@@ -258,6 +259,7 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
