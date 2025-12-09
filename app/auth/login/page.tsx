@@ -30,7 +30,34 @@ export default function Login() {
       }
 
       if (data?.user) {
-        console.log('[Login] Success, redirecting to dashboard');
+        console.log('[Login] Success, sending auth to extension');
+        
+        // Send auth token to extension if available
+        if (window.chrome && window.chrome.runtime) {
+          try {
+            chrome.runtime.sendMessage(
+              {
+                type: 'AUTH_SUCCESS',
+                authToken: data.session?.access_token || '',
+                userEmail: data.user.email,
+                userId: data.user.id,
+                userName: data.user.user_metadata?.full_name || data.user.email.split('@')[0]
+              },
+              (response) => {
+                console.log('[Login] Auth sent to extension:', response);
+              }
+            );
+          } catch (err) {
+            console.log('[Login] Extension not available, continuing anyway');
+          }
+        }
+        
+        // Store in localStorage for extension to pick up
+        localStorage.setItem('extensionAuthToken', data.session?.access_token || '');
+        localStorage.setItem('extensionUserEmail', data.user.email);
+        localStorage.setItem('extensionUserId', data.user.id);
+        
+        console.log('[Login] Redirecting to dashboard');
         window.location.href = '/dashboard';
       }
     } catch (err: any) {
