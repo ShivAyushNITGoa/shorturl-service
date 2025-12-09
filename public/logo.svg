@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" width="280" height="60">
+  <!-- Background shape -->
+  <rect x="10" y="10" width="40" height="40" rx="8" fill="#b0b91a" />
+  
+  <!-- G letter -->
+  <path d="M30 20 C38 20, 40 25, 40 30 C40 35, 38 40, 30 40 C22 40, 20 35, 20 30 L25 30 C25 32.5, 26 35, 30 35 C34 35, 35 32.5, 35 30 C35 27.5, 34 25, 30 25 L30 30 L25 30 L25 20 L30 20 Z" fill="white" />
+  
+  <!-- Text -->
+  <text x="60" y="35" font-family="Montserrat, sans-serif" font-weight="700" font-size="20" fill="#e0d6c8">
+    <tspan fill="#b0b91a">The</tspan> GDevelopers
+  </text>
+</svg>

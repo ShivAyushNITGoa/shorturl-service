@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <!-- Background shape fills more space -->
+  <rect x="0" y="0" width="60" height="60" rx="8" fill="#b0b91a" />
+  
+  <!-- Larger, centered G letter -->
+  <path d="M30 12 C42 12, 46 20, 46 30 C46 40, 42 48, 30 48 C18 48, 14 40, 14 30 L22 30 C22 34, 24 38, 30 38 C36 38, 38 34, 38 30 C38 26, 36 22, 30 22 L30 30 L22 30 L22 12 L30 12 Z" fill="white" />
+</svg>
