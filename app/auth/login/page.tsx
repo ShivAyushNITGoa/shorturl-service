@@ -33,9 +33,10 @@ export default function Login() {
         console.log('[Login] Success, sending auth to extension');
         
         // Send auth token to extension if available
-        if (window.chrome && window.chrome.runtime) {
+        const chromeRuntime = (window as any).chrome?.runtime;
+        if (chromeRuntime) {
           try {
-            chrome.runtime.sendMessage(
+            chromeRuntime.sendMessage(
               {
                 type: 'AUTH_SUCCESS',
                 authToken: data.session?.access_token || '',
@@ -43,7 +44,7 @@ export default function Login() {
                 userId: data.user.id,
                 userName: data.user.user_metadata?.full_name || data.user.email.split('@')[0]
               },
-              (response) => {
+              (response: any) => {
                 console.log('[Login] Auth sent to extension:', response);
               }
             );
