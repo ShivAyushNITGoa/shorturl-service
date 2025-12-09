@@ -205,14 +205,14 @@ export default function Dashboard() {
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           <button
-                            onClick={() => copyToClipboard(`https://shorturl.thegdevelopers.online/api/redirect/${url.short_code}`)}
+                            onClick={() => copyToClipboard(`https://extensions.thegdevelopers.online/shorturl/${url.short_code}`)}
                             className="p-2 hover:bg-slate-700 rounded transition text-slate-300 hover:text-blue-400"
                             title="Copy short URL"
                           >
                             <Copy className="w-4 h-4" />
                           </button>
                           <a
-                            href={`https://shorturl.thegdevelopers.online/api/redirect/${url.short_code}`}
+                            href={`https://extensions.thegdevelopers.online/shorturl/${url.short_code}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 hover:bg-slate-700 rounded transition text-slate-300 hover:text-green-400"
