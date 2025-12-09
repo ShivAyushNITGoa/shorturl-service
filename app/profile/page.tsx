@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import Link from 'next/link';
-import { User, Mail, LogOut, Save, ArrowLeft } from 'lucide-react';
+import { User, Mail, Save, Shield } from 'lucide-react';
+import Navbar from '@/components/navbar';
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);
@@ -46,11 +46,6 @@ export default function Profile() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/auth/login';
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -61,17 +56,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <Link href="/dashboard" className="flex items-center gap-2 text-slate-300 hover:text-white transition">
-            <ArrowLeft className="w-5 h-5" />
-            Back to Dashboard
-          </Link>
-          <h1 className="text-2xl font-bold text-white">Profile Settings</h1>
-          <div className="w-20"></div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -150,19 +135,15 @@ export default function Profile() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="my-8 border-t border-slate-700"></div>
-
-          {/* Danger Zone */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-red-400">Danger Zone</h3>
-            <button
-              onClick={handleLogout}
-              className="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
-            >
-              <LogOut className="w-5 h-5" />
-              Logout
-            </button>
+          {/* Security Info */}
+          <div className="my-8 border-t border-slate-700 pt-8">
+            <div className="flex items-center gap-3 p-4 bg-blue-900/30 border border-blue-700/50 rounded-lg">
+              <Shield className="w-5 h-5 text-blue-400 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-blue-300">Account Security</p>
+                <p className="text-xs text-blue-400 mt-1">Your account is protected with Supabase authentication</p>
+              </div>
+            </div>
           </div>
         </div>
       </main>

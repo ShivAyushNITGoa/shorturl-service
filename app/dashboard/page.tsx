@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { LogOut, Plus, Trash2, Copy, ExternalLink, BarChart3, Settings, Home, FileText, User } from 'lucide-react';
+import { Plus, Trash2, Copy, ExternalLink, BarChart3 } from 'lucide-react';
+import Navbar from '@/components/navbar';
 
 interface ShortURL {
   id: number;
@@ -93,11 +94,6 @@ export default function Dashboard() {
     alert('Copied to clipboard!');
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/auth/login';
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -108,70 +104,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4 mb-4">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                The GDevelopers
-              </h1>
-              <p className="text-slate-400 text-sm mt-1">Short URL Manager & Analytics</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-slate-300 text-sm">
-                {user?.email}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </div>
-          </div>
-
-          {/* Navigation Tabs */}
-          <nav className="flex items-center gap-1 border-t border-slate-700 pt-0">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 px-4 py-3 text-white bg-blue-600 border-b-2 border-blue-500 transition font-medium"
-            >
-              <Home className="w-4 h-4" />
-              Dashboard
-            </Link>
-            <Link
-              href="/analytics"
-              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
-            >
-              <BarChart3 className="w-4 h-4" />
-              Analytics
-            </Link>
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
-            >
-              <User className="w-4 h-4" />
-              Profile
-            </Link>
-            <Link
-              href="/docs"
-              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
-            >
-              <FileText className="w-4 h-4" />
-              Docs
-            </Link>
-            <Link
-              href="/about"
-              className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-700/50 transition font-medium"
-            >
-              <Settings className="w-4 h-4" />
-              About
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import Link from 'next/link';
-import { BarChart3, TrendingUp, Link2, MousePointerClick, ArrowLeft } from 'lucide-react';
+import { BarChart3, TrendingUp, Link2, MousePointerClick } from 'lucide-react';
+import Navbar from '@/components/navbar';
 
 interface AnalyticsData {
   totalUrls: number;
@@ -71,17 +71,7 @@ export default function Analytics() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <Link href="/dashboard" className="flex items-center gap-2 text-slate-300 hover:text-white transition">
-            <ArrowLeft className="w-5 h-5" />
-            Back to Dashboard
-          </Link>
-          <h1 className="text-2xl font-bold text-white">Analytics</h1>
-          <div className="w-20"></div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
