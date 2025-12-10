@@ -27,11 +27,9 @@ export default function Navbar() {
   const isActive = (path: string) => pathname === path;
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: Home },
-    { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-    { href: '/profile', label: 'Profile', icon: User },
-    { href: '/docs', label: 'Docs', icon: FileText },
-    { href: '/about', label: 'About', icon: Info },
+    { href: '/#features', label: 'Features' },
+    { href: '/docs', label: 'Docs' },
+    { href: '/about', label: 'About' },
   ];
 
   return (
@@ -50,24 +48,16 @@ export default function Navbar() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive(item.href)
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'text-slate-300 hover:bg-slate-700 hover:text-white'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
+          <div className="hidden md:flex items-center gap-6">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
 
           {/* User Section */}
@@ -95,24 +85,16 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center gap-1 pb-3 overflow-x-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-all duration-200 whitespace-nowrap text-xs ${
-                  isActive(item.href)
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        <div className="md:hidden flex items-center gap-2 pb-3 overflow-x-auto">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="px-3 py-1 rounded-lg transition-all duration-200 whitespace-nowrap text-xs text-slate-300 hover:text-white"
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
       </div>
     </nav>

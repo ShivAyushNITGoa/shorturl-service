@@ -80,6 +80,7 @@ export default function Home() {
   const [theme, setTheme] = useState<Theme>('midnight');
   const [mounted, setMounted] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -252,6 +253,77 @@ export default function Home() {
                 <p className="text-gray-300">{feature.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categorized Tools Section - Toggle List */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              55 Tools Organized by Category
+            </h2>
+            <p className="text-xl text-slate-400">
+              Click on any category to expand and see all tools
+            </p>
+          </div>
+
+          {/* Toggle List */}
+          <div className="space-y-2 mb-12">
+            {[
+              { id: 'productivity-time', icon: '⏱️', name: 'Productivity & Time', count: 3, tools: ['Pomodoro Timer', 'Timer', 'Stopwatch'] },
+              { id: 'text-document', icon: '📝', name: 'Text & Document', count: 7, tools: ['Markdown', 'Grammar Check', 'Text Analyzer', 'Text Case Converter', 'Word Counter', 'Markdown Preview', 'Document Converter'] },
+              { id: 'developer', icon: '💻', name: 'Developer Tools', count: 11, tools: ['Syntax Highlighter', 'JSON Formatter', 'JSON Beautifier', 'Regex Tester', 'HTML Preview', 'CSS Minifier', 'JS Minifier', 'URL Encoder', 'Base64 Encoder', 'Cron Expression', 'Email Validator'] },
+              { id: 'generators', icon: '🎲', name: 'Generators & Utilities', count: 6, tools: ['QR Code Generator', 'UUID Generator', 'Hash Generator', 'Random Name Gen', 'Lorem Ipsum', 'Dice Roller'] },
+              { id: 'calculators', icon: '🧮', name: 'Calculators & Math', count: 3, tools: ['Calculator', 'BMI Calculator', 'Mortgage Calculator'] },
+              { id: 'productivity', icon: '✅', name: 'Productivity', count: 5, tools: ['Todo List', 'Quick Notes', 'Clipboard Manager', 'Countdown Timer', 'Screenshot Tool'] },
+              { id: 'network', icon: '🌐', name: 'Network & System', count: 7, tools: ['IP Address Lookup', 'Speed Test', 'WHOIS Lookup', 'DNS Checker', 'Screen Resolution', 'System Info', 'Battery Info'] },
+              { id: 'security', icon: '🔐', name: 'Security & Encryption', count: 4, tools: ['Password Generator', 'Password Strength', 'Text Encrypt', 'Hash Generator'] },
+              { id: 'converters', icon: '🔄', name: 'File Converters', count: 3, tools: ['Image Converter', 'Unit Converter', 'Timestamp Converter'] },
+              { id: 'misc', icon: '🎨', name: 'Miscellaneous', count: 5, tools: ['Weather', 'URL Shortener', 'Color Tools', 'Color Palette', 'Coin Flip'] },
+            ].map((category) => (
+              <div key={category.id} className="border border-slate-700 rounded-lg overflow-hidden hover:border-blue-500/60 transition">
+                <button
+                  onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
+                  className="w-full px-6 py-4 flex items-center justify-between bg-slate-800/50 hover:bg-slate-800 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{category.icon}</span>
+                    <div className="text-left">
+                      <h3 className="text-lg font-bold text-white">{category.name}</h3>
+                      <p className="text-sm text-slate-400">{category.count} tools</p>
+                    </div>
+                  </div>
+                  <span className={`text-2xl transition-transform ${expandedCategory === category.id ? 'rotate-180' : ''}`}>▼</span>
+                </button>
+                {expandedCategory === category.id && (
+                  <div className="px-6 py-4 bg-slate-900/50 border-t border-slate-700">
+                    <ul className="space-y-2">
+                      {category.tools.map((tool, idx) => (
+                        <li key={idx} className="text-slate-300">• {tool}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="text-center space-x-4">
+            <Link 
+              href="/tools" 
+              className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition"
+            >
+              View All Tools →
+            </Link>
+            <Link 
+              href="/mail1s" 
+              className="inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition"
+            >
+              📮 Mail1s.net Suite
+            </Link>
           </div>
         </div>
       </section>

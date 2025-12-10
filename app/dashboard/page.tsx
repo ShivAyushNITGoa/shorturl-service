@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { Plus, Trash2, Copy, ExternalLink, BarChart3 } from 'lucide-react';
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
+import { Plus, Trash2, Copy, ExternalLink, LogOut, TrendingUp } from 'lucide-react';
 
 interface ShortURL {
   id: number;
@@ -103,12 +101,52 @@ export default function Dashboard() {
     );
   }
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <Navbar />
+      {/* Landing Page Header */}
+      <nav className="fixed w-full z-50 transition-all duration-300 backdrop-blur-md shadow-lg" style={{ backgroundColor: '#0f172acc' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/logo.svg" alt="The GDevelopers Advanced Suite" className="h-8 sm:h-10" />
+          </Link>
+          <div className="hidden md:flex gap-6">
+            <Link href="/dashboard" className="text-sm font-medium text-white transition">
+              Dashboard
+            </Link>
+            <Link href="/tools" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Tools
+            </Link>
+            <Link href="/docs" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Docs
+            </Link>
+            <Link href="/about" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              About
+            </Link>
+          </div>
+          <div className="flex gap-4">
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white transition"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm">Logout</span>
+              </button>
+            )}
+            <Link href="/" className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">
+              Home
+            </Link>
+          </div>
+        </div>
+      </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-20">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-700/50 rounded-lg p-6">
@@ -129,7 +167,7 @@ export default function Dashboard() {
                   {shortUrls.reduce((sum, url) => sum + url.clicks, 0)}
                 </p>
               </div>
-              <BarChart3 className="w-12 h-12 text-cyan-500/30" />
+              <TrendingUp className="w-12 h-12 text-cyan-500/30" />
             </div>
           </div>
 
@@ -178,7 +216,7 @@ export default function Dashboard() {
         <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden shadow-lg">
           <div className="px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-slate-800 to-slate-700">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-400" />
+              <TrendingUp className="w-5 h-5 text-blue-400" />
               Your Short URLs ({shortUrls.length})
             </h2>
           </div>
@@ -259,7 +297,48 @@ export default function Dashboard() {
           )}
         </div>
       </main>
-      <Footer />
+
+      {/* Footer */}
+      <footer className="bg-slate-900 border-t border-slate-700 mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div>
+              <div className="mb-2">
+                <img src="/logo.svg" alt="The GDevelopers" className="h-48 w-48" />
+              </div>
+              <p className="text-slate-400 text-sm">Building powerful tools for developers and creators.</p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/dashboard" className="text-slate-400 hover:text-white transition">Dashboard</Link></li>
+                <li><Link href="/ai-analytics" className="text-slate-400 hover:text-white transition">AI Analytics</Link></li>
+                <li><Link href="/docs" className="text-slate-400 hover:text-white transition">Documentation</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/about" className="text-slate-400 hover:text-white transition">About</Link></li>
+                <li><a href="https://thegdevelopers.info" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition">Website</a></li>
+                <li><a href="mailto:info@thegdevelopers.info" className="text-slate-400 hover:text-white transition">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Connect</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="https://github.com/ShivAyushNITGoa" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition">GitHub</a></li>
+                <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition">Twitter</a></li>
+                <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition">LinkedIn</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-700 pt-3 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-slate-400 text-xs">© 2025 The GDevelopers. All rights reserved.</p>
+            <p className="text-slate-400 text-xs mt-1 md:mt-0">Made with ❤️ for developers</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
