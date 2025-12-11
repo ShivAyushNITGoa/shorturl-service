@@ -738,11 +738,15 @@ function VideoToolSuite({ theme }: any) {
       // Extract platform from URL
       let platform = 'Unknown';
       let videoId = '';
+      let thumbnail = '';
       
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         platform = 'YouTube';
         const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
         videoId = match ? match[1] : 'N/A';
+        if (videoId !== 'N/A') {
+          thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
       } else if (url.includes('tiktok.com')) {
         platform = 'TikTok';
         const match = url.match(/\/video\/(\d+)/);
@@ -764,11 +768,6 @@ function VideoToolSuite({ theme }: any) {
         videoId = 'Stream/VOD';
       }
 
-      // Fetch metadata using oEmbed
-      const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/oembed?url=${url}&format=json`)}`, {
-        method: 'GET',
-      });
-
       let metadata: any = {
         platform,
         videoId,
@@ -776,21 +775,32 @@ function VideoToolSuite({ theme }: any) {
         urlLength: url.length,
         isValid: url.startsWith('http'),
         timestamp: new Date().toLocaleString(),
+        thumbnail: thumbnail || null,
       };
 
-      if (response.ok) {
-        const data = await response.json();
-        const oembedData = JSON.parse(data.contents);
-        metadata = {
-          ...metadata,
-          title: oembedData.title,
-          author: oembedData.author_name,
-          thumbnail: oembedData.thumbnail_url,
-          width: oembedData.width,
-          height: oembedData.height,
-          thumbnailWidth: oembedData.thumbnail_width,
-          thumbnailHeight: oembedData.thumbnail_height,
-        };
+      // Try to fetch metadata using YouTube oEmbed (most reliable)
+      if (platform === 'YouTube' && videoId !== 'N/A') {
+        try {
+          const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+          const response = await fetch(oembedUrl);
+          
+          if (response.ok) {
+            const oembedData = await response.json();
+            metadata = {
+              ...metadata,
+              title: oembedData.title,
+              author: oembedData.author_name,
+              thumbnail: oembedData.thumbnail_url,
+              width: oembedData.width,
+              height: oembedData.height,
+              thumbnailWidth: oembedData.thumbnail_width,
+              thumbnailHeight: oembedData.thumbnail_height,
+            };
+          }
+        } catch (oembedErr) {
+          // Fallback to default YouTube thumbnail if oEmbed fails
+          console.log('oEmbed fetch failed, using default thumbnail');
+        }
       }
 
       setVideoInfo(metadata);
