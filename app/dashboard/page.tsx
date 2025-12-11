@@ -1,9 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { Plus, Trash2, Copy, ExternalLink, LogOut, TrendingUp } from 'lucide-react';
+import { LogOut, Copy, Download, Trash2, Palette, Plus, TrendingUp, ExternalLink } from 'lucide-react';
+
+const themes = [
+  { id: 'midnight', label: 'Midnight', bg: 'from-slate-900 via-slate-950 to-black', card: 'bg-slate-900/70', accent: 'text-blue-300', primary: '#3b82f6' },
+  { id: 'ocean', label: 'Ocean', bg: 'from-cyan-900 via-blue-900 to-slate-950', card: 'bg-cyan-900/60', accent: 'text-cyan-200', primary: '#0ea5e9' },
+  { id: 'sunset', label: 'Sunset', bg: 'from-amber-900 via-orange-900 to-red-950', card: 'bg-amber-900/40', accent: 'text-amber-200', primary: '#f97316' },
+  { id: 'forest', label: 'Forest', bg: 'from-green-900 via-emerald-950 to-black', card: 'bg-green-900/50', accent: 'text-green-200', primary: '#10b981' },
+  { id: 'aurora', label: 'Aurora', bg: 'from-purple-900 via-pink-900 to-slate-950', card: 'bg-purple-900/50', accent: 'text-purple-200', primary: '#a855f7' },
+  { id: 'cyberpunk', label: 'Cyberpunk', bg: 'from-slate-950 via-purple-950 to-black', card: 'bg-slate-900/80', accent: 'text-pink-300', primary: '#ec4899' },
+];
 
 interface ShortURL {
   id: number;
@@ -19,6 +28,8 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [newUrl, setNewUrl] = useState('');
   const [creating, setCreating] = useState(false);
+  const [themeId, setThemeId] = useState('midnight');
+  const theme = useMemo(() => themes.find((t) => t.id === themeId) || themes[0], [themeId]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -95,7 +106,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className={`min-h-screen bg-gradient-to-br ${theme.bg} flex items-center justify-center`}>
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
@@ -107,7 +118,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className={`min-h-screen bg-gradient-to-br ${theme.bg} text-slate-100`}>
       {/* Landing Page Header */}
       <nav className="fixed w-full z-50 transition-all duration-300 backdrop-blur-md shadow-lg" style={{ backgroundColor: '#0f172acc' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -121,6 +132,9 @@ export default function Dashboard() {
             <Link href="/tools" className="text-sm font-medium text-slate-300 hover:text-white transition">
               Tools
             </Link>
+            <Link href="/extension" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Online Extension
+            </Link>
             <Link href="/docs" className="text-sm font-medium text-slate-300 hover:text-white transition">
               Docs
             </Link>
@@ -128,7 +142,36 @@ export default function Dashboard() {
               About
             </Link>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
+            {/* Advanced Theme Selector */}
+            <div className="relative group">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 hover:text-white transition border border-slate-700">
+                <Palette className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm">Theme</span>
+              </button>
+              <div className="absolute right-0 mt-2 w-56 bg-black/90 backdrop-blur-md border border-white/20 rounded-lg shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="text-xs font-semibold text-white mb-2">Select Theme</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {themes.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setThemeId(t.id)}
+                      className={`px-2 py-2 text-xs font-medium rounded-lg border-2 transition-all ${
+                        themeId === t.id
+                          ? 'border-white/40 bg-white/15 text-white shadow-lg'
+                          : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                      }`}
+                      style={themeId === t.id ? { boxShadow: `0 0 12px ${t.primary}40` } : {}}
+                    >
+                      <div className="flex items-center gap-1 justify-center">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.primary }}></div>
+                        <span className="hidden sm:inline">{t.label}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
             {user && (
               <button
                 onClick={handleLogout}

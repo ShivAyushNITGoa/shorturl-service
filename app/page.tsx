@@ -1,190 +1,110 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { 
   Zap, Code2, Palette, Smartphone, Cloud, Shield, Moon, Sun,
   ArrowRight, CheckCircle, TrendingUp, Users, Zap as Lightning,
-  BarChart3, Lock, Rocket, Globe, Smartphone as Mobile, Cpu
+  BarChart3, Lock, Rocket, Globe, Smartphone as Mobile, Cpu, LogOut
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
-type Theme = 'midnight' | 'sapphire' | 'emerald' | 'crimson' | 'amethyst' | 'platinum';
-
-const themeConfig: Record<Theme, { 
-  bg: string; 
-  primary: string; 
-  secondary: string; 
-  accent: string; 
-  name: string;
-  description: string;
-  textColor: string;
-}> = {
-  midnight: {
-    bg: '#0f172a',
-    primary: '#3b82f6',
-    secondary: '#1e40af',
-    accent: '#60a5fa',
-    name: 'Midnight',
-    description: 'Deep blue professional theme',
-    textColor: '#f1f5f9'
-  },
-  sapphire: {
-    bg: '#1e3a8a',
-    primary: '#0ea5e9',
-    secondary: '#0284c7',
-    accent: '#38bdf8',
-    name: 'Sapphire',
-    description: 'Vibrant blue corporate theme',
-    textColor: '#f0f9ff'
-  },
-  emerald: {
-    bg: '#064e3b',
-    primary: '#10b981',
-    secondary: '#059669',
-    accent: '#6ee7b7',
-    name: 'Emerald',
-    description: 'Fresh green growth theme',
-    textColor: '#ecfdf5'
-  },
-  crimson: {
-    bg: '#7f1d1d',
-    primary: '#ef4444',
-    secondary: '#dc2626',
-    accent: '#fca5a5',
-    name: 'Crimson',
-    description: 'Bold red power theme',
-    textColor: '#fef2f2'
-  },
-  amethyst: {
-    bg: '#4c1d95',
-    primary: '#a855f7',
-    secondary: '#9333ea',
-    accent: '#d8b4fe',
-    name: 'Amethyst',
-    description: 'Elegant purple luxury theme',
-    textColor: '#faf5ff'
-  },
-  platinum: {
-    bg: '#1f2937',
-    primary: '#e5e7eb',
-    secondary: '#d1d5db',
-    accent: '#9ca3af',
-    name: 'Platinum',
-    description: 'Minimalist grayscale theme',
-    textColor: '#f9fafb'
-  }
-};
+const themes = [
+  { id: 'midnight', label: 'Midnight', bg: 'from-slate-900 via-slate-950 to-black', card: 'bg-slate-900/70', accent: 'text-blue-300', primary: '#3b82f6' },
+  { id: 'ocean', label: 'Ocean', bg: 'from-cyan-900 via-blue-900 to-slate-950', card: 'bg-cyan-900/60', accent: 'text-cyan-200', primary: '#0ea5e9' },
+  { id: 'sunset', label: 'Sunset', bg: 'from-amber-900 via-orange-900 to-red-950', card: 'bg-amber-900/40', accent: 'text-amber-200', primary: '#f97316' },
+  { id: 'forest', label: 'Forest', bg: 'from-green-900 via-emerald-950 to-black', card: 'bg-green-900/50', accent: 'text-green-200', primary: '#10b981' },
+  { id: 'aurora', label: 'Aurora', bg: 'from-purple-900 via-pink-900 to-slate-950', card: 'bg-purple-900/50', accent: 'text-purple-200', primary: '#a855f7' },
+  { id: 'cyberpunk', label: 'Cyberpunk', bg: 'from-slate-950 via-purple-950 to-black', card: 'bg-slate-900/80', accent: 'text-pink-300', primary: '#ec4899' },
+];
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [theme, setTheme] = useState<Theme>('midnight');
-  const [mounted, setMounted] = useState(false);
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [themeId, setThemeId] = useState('midnight');
+  const theme = useMemo(() => themes.find((t) => t.id === themeId) || themes[0], [themeId]);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem('theme') as Theme || 'midnight';
-    setTheme(savedTheme);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    getUser();
   }, []);
 
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    window.location.href = '/';
   };
 
-  const currentTheme = themeConfig[theme] || themeConfig.midnight;
-
-  if (!mounted) {
-    return (
-      <div style={{ backgroundColor: themeConfig.midnight.bg, color: themeConfig.midnight.textColor }} className="min-h-screen" />
-    );
-  }
-
   return (
-    <div className="min-h-screen transition-all duration-500" style={{ backgroundColor: currentTheme.bg, color: currentTheme.textColor }}>
-      {/* Navigation */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'backdrop-blur-md shadow-lg' : ''}`} style={{ backgroundColor: isScrolled ? currentTheme.bg + 'cc' : 'transparent' }}>
+    <div className={`min-h-screen bg-gradient-to-br ${theme.bg} text-slate-100`}>
+      {/* Navbar */}
+      <nav className="fixed w-full z-50 transition-all duration-300 backdrop-blur-md shadow-lg" style={{ backgroundColor: '#0f172acc' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <img src="/logo.svg" alt="The GDevelopers Advanced Suite" className="h-8 sm:h-10" />
+          </Link>
+          <div className="hidden md:flex gap-6">
+            <Link href="/dashboard" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Dashboard
+            </Link>
+            <Link href="/tools" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Tools
+            </Link>
+            <Link href="/extension" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Online Extension
+            </Link>
+            <Link href="/docs" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              Docs
+            </Link>
+            <Link href="/about" className="text-sm font-medium text-slate-300 hover:text-white transition">
+              About
+            </Link>
           </div>
           <div className="flex gap-4 items-center">
-            {/* Navigation Links */}
-            <div className="hidden md:flex gap-6">
-              <Link href="/#features" className="text-sm font-medium hover:opacity-75 transition">
-                Features
-              </Link>
-              <Link href="/docs" className="text-sm font-medium hover:opacity-75 transition">
-                Docs
-              </Link>
-              <Link href="/about" className="text-sm font-medium hover:opacity-75 transition">
-                About
-              </Link>
-            </div>
-
-            {/* Theme Toggle Button */}
-            <div className="relative">
-              <button
-                onClick={() => setShowThemeMenu(!showThemeMenu)}
-                className="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all text-sm sm:text-base hover:opacity-80"
-                style={{
-                  backgroundColor: currentTheme.primary,
-                  color: currentTheme.bg,
-                }}
-              >
-                🎨 <span className="hidden sm:inline">Theme</span>
+            {/* Advanced Theme Selector */}
+            <div className="relative group">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 hover:text-white transition border border-slate-700">
+                <Palette className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm">Theme</span>
               </button>
-
-              {/* Theme Menu */}
-              {showThemeMenu && (
-                <div
-                  className="absolute right-0 mt-2 w-80 sm:w-96 rounded-lg shadow-2xl z-50 overflow-hidden max-h-96 overflow-y-auto"
-                  style={{ backgroundColor: currentTheme.bg, border: `2px solid ${currentTheme.primary}` }}
-                >
-                  <div className="p-3 sm:p-4 space-y-2">
-                    {(Object.keys(themeConfig) as Theme[]).map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          handleThemeChange(t);
-                          setShowThemeMenu(false);
-                        }}
-                        className="w-full text-left p-2 sm:p-3 rounded-lg transition-all text-sm sm:text-base"
-                        style={{
-                          backgroundColor: theme === t ? currentTheme.primary + '30' : 'transparent',
-                          borderLeft: theme === t ? `4px solid ${currentTheme.primary}` : '4px solid transparent',
-                          color: currentTheme.textColor,
-                        }}
-                      >
-                        <div className="font-semibold text-sm sm:text-base">{themeConfig[t].name}</div>
-                        <div className="text-xs sm:text-sm opacity-75 hidden sm:block">{themeConfig[t].description}</div>
-                        <div className="flex gap-1 sm:gap-2 mt-2">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded" style={{ backgroundColor: themeConfig[t].primary }}></div>
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded" style={{ backgroundColor: themeConfig[t].secondary }}></div>
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded" style={{ backgroundColor: themeConfig[t].accent }}></div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+              <div className="absolute right-0 mt-2 w-56 bg-black/90 backdrop-blur-md border border-white/20 rounded-lg shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="text-xs font-semibold text-white mb-2">Select Theme</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {themes.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setThemeId(t.id)}
+                      className={`px-2 py-2 text-xs font-medium rounded-lg border-2 transition-all ${
+                        themeId === t.id 
+                          ? 'border-white/40 bg-white/15 text-white shadow-lg' 
+                          : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                      }`}
+                      style={themeId === t.id ? { boxShadow: `0 0 12px ${t.primary}40` } : {}}
+                    >
+                      <div className="flex items-center gap-1 justify-center">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.primary }}></div>
+                        <span className="hidden sm:inline">{t.label}</span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
             </div>
-
-            <a href="https://thegdevelopers.info" target="_blank" rel="noopener noreferrer" className="btn-secondary">
-              Website
-            </a>
-            <a href="#features" className="btn-primary">
-              Explore
-            </a>
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white transition"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm">Logout</span>
+              </button>
+            )}
+            <Link href="/" className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">
+              Home
+            </Link>
           </div>
         </div>
       </nav>
@@ -193,45 +113,45 @@ export default function Home() {
       <section className="min-h-screen flex items-center justify-center px-4 pt-20 relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl" style={{ backgroundColor: currentTheme.primary }}></div>
-          <div className="absolute bottom-20 right-10 w-72 h-72 rounded-full blur-3xl" style={{ backgroundColor: currentTheme.secondary }}></div>
+          <div className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl" style={{ backgroundColor: theme.primary }}></div>
+          <div className="absolute bottom-20 right-10 w-72 h-72 rounded-full blur-3xl" style={{ backgroundColor: theme.primary }}></div>
         </div>
 
         <div className="text-center max-w-4xl mx-auto animate-fade-in relative z-10">
-          <div className="inline-block mb-6 px-4 py-2 rounded-full" style={{ backgroundColor: currentTheme.primary + '20', border: `1px solid ${currentTheme.primary}` }}>
-            <span style={{ color: currentTheme.primary }} className="text-sm font-semibold">✨ Advanced Developer Suite v2.0</span>
+          <div className="inline-block mb-6 px-4 py-2 rounded-full" style={{ backgroundColor: theme.primary + '20', border: `1px solid ${theme.primary}` }}>
+            <span style={{ color: theme.primary }} className="text-sm font-semibold">✨ Advanced Developer Suite v2.0</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-6" style={{ color: currentTheme.textColor }}>
-            Professional Tools for <span style={{ color: currentTheme.primary }}>Developers</span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+            Professional Tools for <span style={{ color: theme.primary }}>Developers</span>
           </h1>
-          <p className="text-xl md:text-2xl mb-8" style={{ color: currentTheme.textColor + 'cc' }}>
+          <p className="text-xl md:text-2xl mb-8 text-slate-300">
             Boost productivity with 20+ powerful tools. Chrome extension, web app, and real-time cloud sync.
           </p>
 
           <div className="grid grid-cols-3 gap-4 mb-12 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold" style={{ color: currentTheme.primary }}>20+</div>
+              <div className="text-3xl font-bold" style={{ color: theme.primary }}>20+</div>
               <div className="text-sm opacity-75">Tools</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold" style={{ color: currentTheme.primary }}>100%</div>
+              <div className="text-3xl font-bold" style={{ color: theme.primary }}>100%</div>
               <div className="text-sm opacity-75">Free</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold" style={{ color: currentTheme.primary }}>∞</div>
+              <div className="text-3xl font-bold" style={{ color: theme.primary }}>∞</div>
               <div className="text-sm opacity-75">Sync</div>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/signup" className="px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105" style={{ backgroundColor: currentTheme.primary, color: currentTheme.bg }}>
+            <Link href="/auth/signup" className="px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105 text-white" style={{ backgroundColor: theme.primary }}>
               🚀 Get Started Free
             </Link>
-            <Link href="/dashboard" className="px-8 py-3 rounded-lg font-semibold transition-all hover:opacity-80" style={{ backgroundColor: currentTheme.primary + '20', border: `2px solid ${currentTheme.primary}`, color: currentTheme.textColor }}>
+            <Link href="/dashboard" className="px-8 py-3 rounded-lg font-semibold transition-all hover:opacity-80 text-slate-300" style={{ backgroundColor: theme.primary + '20', border: `2px solid ${theme.primary}` }}>
               📊 Dashboard
             </Link>
-            <Link href="/docs" className="px-8 py-3 rounded-lg font-semibold transition-all hover:opacity-80" style={{ backgroundColor: currentTheme.primary + '20', border: `2px solid ${currentTheme.primary}`, color: currentTheme.textColor }}>
+            <Link href="/docs" className="px-8 py-3 rounded-lg font-semibold transition-all hover:opacity-80 text-slate-300" style={{ backgroundColor: theme.primary + '20', border: `2px solid ${theme.primary}` }}>
               📚 Documentation
             </Link>
           </div>
@@ -311,7 +231,7 @@ export default function Home() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="text-center space-x-4">
+          <div className="text-center space-x-4 flex flex-wrap justify-center gap-4">
             <Link 
               href="/tools" 
               className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition"
@@ -322,7 +242,13 @@ export default function Home() {
               href="/mail1s" 
               className="inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition"
             >
-              📮 Mail1s.net Suite
+              📮 Mail1s API Dashboard
+            </Link>
+            <Link 
+              href="/mail1s-iframe" 
+              className="inline-block px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-orange-500/50 transition"
+            >
+              📮 Mail1s Web Dashboard
             </Link>
           </div>
         </div>
